@@ -6,6 +6,32 @@ import contactImages from '../../static/image/contactsIcons';
 import classes from './ProfilePage.module.scss'
 
 const ProfilePage = () => {
+    const dummy_groups = [
+        {
+            name: 'IP-22',
+            description: 'Опис групи',
+            type: 'private',
+            userCount: 12,
+            maxCount: 15,
+            role: 'student'
+        },
+        {
+            name: 'IP-24',
+            description: '',
+            type: 'public',
+            userCount: 25,
+            maxCount: 50,
+            role: 'admin'
+        },
+        {
+            name: 'IP-25',
+            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            type: 'public',
+            userCount: 39,
+            maxCount: 50,
+            role: 'helpAdmin'
+        },
+    ]
     return <div>
         <HeaderImg position={'absolute'}/>
         <div className={classes.content}>
@@ -41,9 +67,9 @@ const ProfilePage = () => {
             </div>
             <div className={classes.groupsBox}>
                 <h4>Группи:</h4>
-                <GroupCard type='add'></GroupCard>
-                <GroupCard></GroupCard>
-                <GroupCard></GroupCard>
+                {dummy_groups.map((group, index) => 
+                    <GroupCard key={index} title={group.name} description={group.description} status={group.type} usersCount={group.userCount} maxCount={group.maxCount} statusName={group.role}></GroupCard>
+                )}
             </div>
             <div className={classes.buttonBox}>
                 <Button >Вийти</Button>

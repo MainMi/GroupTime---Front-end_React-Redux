@@ -50,15 +50,24 @@
                         align-items: center;
                         width: 24px;
                         height: 24px;
-                        background-color: #CB5456;
+                        background-color: #8EA94B;
                         border-radius: 5px;
                     }
                     .status {
-                        color: #CB5456;
+                        color: #8EA94B;
                         padding: 1px 10px;
                         font-size: 14px;
-                        border: 1px solid #CB5456;
+                        border: 1px solid #8EA94B;
                         border-radius: 10px;
+                    }
+                    &.private {
+                        .status {
+                            color: #CB5456;
+                            border: 1px solid #CB5456;
+                        }
+                        .imgBox {
+                            background-color: #CB5456;
+                        }
                     }
                 }
             }
