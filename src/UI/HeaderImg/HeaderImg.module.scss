@@ -1,0 +1,17 @@
+.headerImg {
+    position: relative;
+    width: 100%;
+    height: 11vh;
+    background: url('../../static/image/pattern/patternDesktop.svg');
+    background-size: cover;
+}
+
+@media (max-width: 768px) {
+    .headerImg {
+        position: relative;
+        width: 100%;
+        height: 152px;
+        background: url('../../static/image/pattern/patternMobile.svg') no-repeat;
+        background-size: cover;
+    }
+}

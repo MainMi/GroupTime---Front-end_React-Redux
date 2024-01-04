@@ -1,0 +1,86 @@
+.labelBox {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: relative;
+    width: 100%;
+
+    label {
+        font-size: 14px;
+    }
+    .dropdown {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 9px 12px 8px;
+        background-color: transparent;
+        border: 1px solid #626262;
+        background-color: #FFADAD;
+        border-radius: 15px;
+        list-style: none;
+        font-size: 14px;
+        transition: 250ms;
+        gap: 10px;
+        &List {
+            position: relative;
+            display: grid;
+            color: #FFF1E5;
+            background-color: #FFBEBE;
+            border-radius: 15px;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.15);
+            padding: 8px 12px;
+            transform-origin: top;
+            transform: scale(0);
+            transition: 250ms;
+            &.active {
+                transform: scale(1);
+            }
+            * {
+                padding: 4px 8px;
+            }
+            *:hover {
+                background-color: #F7A1A2;
+            }
+        }
+        &::after {
+            content: '';
+            position: relative;
+            width: 16px;
+            height: 16px;
+            background: url('../../static/image/buttonIcons/chevronIcon-pink.svg') center no-repeat;
+            transform: rotate(-90deg);
+        }
+        &:focus,
+        &:focus-visible {
+            background-color: #FFD1D1;
+            border: 1px solid #626262;
+            outline: none;
+        }
+        &:active {
+            border: 1px solid #64AB52;
+        }
+        &::placeholder {
+            color: #B2B5AC;
+        }
+        &:disabled {
+            color: #A1A1A1;
+            border: 1px solid #A1A1A1;
+        }
+        
+        &.error {
+            border: 1px solid #DA6264;
+            &:focus,
+            &:focus-visible {
+                border: 1px solid #ACCA62;
+                outline: none;
+            }
+        }
+    }
+    
+    .error {
+        font-size: 12px;
+        color: #DA6264;
+    }
+}
