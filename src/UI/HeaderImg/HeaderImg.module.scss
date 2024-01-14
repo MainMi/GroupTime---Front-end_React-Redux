@@ -1,17 +1,11 @@
 .headerImg {
     position: relative;
-    width: 100%;
-    height: 195px;
+    width: calc(100vw - 72px);
+    height: 10.7vw;
     background: url('../../static/image/pattern/patternDesktop.svg') no-repeat;
     background-size: cover;
+    margin-left: 72px;
 }
-
-@media (max-width: 1440px) {
-    .headerImg {
-        height: 160px;
-    }
-}
-
 @media (max-width: 768px) {
     .headerImg {
         position: relative;

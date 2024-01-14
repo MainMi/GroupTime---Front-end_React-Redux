@@ -25,7 +25,7 @@ const GroupCard = (props) => {
                     <h3>{title}</h3>
                     <div className={`${classes.statusBox} ${isPrivate ? classes.private : ''}`}>
                         <div className={classes.imgBox}>
-                            <img src={buttonsImages.lockClose} alt='lockClose'></img>
+                            <img src={buttonsImages[isPrivate ? 'lockClose' : 'lockOpen']} alt='lockClose'></img>
                         </div>
                         <div className={classes.status}>{statusName.charAt(0).toUpperCase() + statusName.slice(1)}</div>
                     </div>

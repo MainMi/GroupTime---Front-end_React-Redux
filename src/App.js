@@ -4,6 +4,7 @@ import RootLayout from './layouts/Root/RootLayout';
 import AboutPage from './pages/About/AboutPage';
 import SingPage from './pages/Sing/SingPage';
 import ProfilePage from './pages/Profile/ProfilePage';
+import GroupPage from './pages/Group/GroupPage';
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
         { path: '/', element: <AboutPage/> },
         { path: '/sing', element: <SingPage/> },
         { path: '/profile', element: <ProfilePage/> },
+        { path: '/groups', element: <GroupPage/>}
       ]
     }
   ])
