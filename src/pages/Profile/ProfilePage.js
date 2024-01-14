@@ -1,3 +1,8 @@
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { fetchAuth } from '../../store/actions/auth-actions';
+
 import Button from '../../UI/Button/Button';
 import GroupCard from '../../UI/GroupCard/GroupCard';
 import HeaderImg from '../../UI/HeaderImg/HeaderImg';
@@ -6,32 +11,42 @@ import contactImages from '../../static/image/contactsIcons';
 import classes from './ProfilePage.module.scss'
 
 const ProfilePage = () => {
-    const dummy_groups = [
-        {
-            name: 'IP-22',
-            description: 'Опис групи',
-            type: 'private',
-            userCount: 12,
-            maxCount: 15,
-            role: 'student'
-        },
-        {
-            name: 'IP-24',
-            description: '',
-            type: 'public',
-            userCount: 25,
-            maxCount: 50,
-            role: 'admin'
-        },
-        {
-            name: 'IP-25',
-            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-            type: 'public',
-            userCount: 39,
-            maxCount: 50,
-            role: 'helpAdmin'
-        },
-    ]
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const [userInfo, setUserInfo] = useState(null);
+
+    useEffect(() => {
+        dispatch(
+            fetchAuth(
+                (data) => {
+                    console.log('Authorized:', data);
+                    setUserInfo(data);
+                },
+                navigate
+            )
+        );
+    }, [dispatch, navigate]);
+
+    if (!userInfo) {
+        return null;
+    }
+
+    const userGroups = userInfo.groups;
+    const userContacts = userInfo.contacts;
+
+    const hasContactInfo = Object.values(userContacts).some((contactValue) => contactValue);
+
+    const getAge = (dateString) => { 
+        const today = new Date();
+        const birthDate = new Date(dateString);
+        const m = today.getMonth() - birthDate.getMonth();
+        const age = today.getFullYear() - birthDate.getFullYear() - (m < 0 || (m === 0 && today.getDate() < birthDate.getDate()));
+        return age;
+    }
+
+    const userAge = getAge(userInfo.birthday);
+
     return <div>
         <HeaderImg position={'absolute'}/>
         <div className={classes.content}>
@@ -41,38 +56,46 @@ const ProfilePage = () => {
                     <img></img>
                 </div>
                 <div className={classes.userInfo}>
-                    <h1>Прізвище Ім’я По-батькові</h1>
-                    <div className={classes.userNickname}>@Nickname</div>
+                    <h1>{userInfo.fullName}</h1>
+                    <div className={classes.userNickname}>{userInfo.nickname}</div>
                     <div className={classes.contactInfoMain}>
-                        <Button beforeImg={contactImages.gmail} padding={'4px 16px'}>@jstudent.k</Button>
-                        <Button beforeImg='edit' padding={'4px 16px'}>Вік: 18</Button>
-                        <Button beforeImg={contactImages.phone} padding={'4px 16px'}>0687563756</Button>
+                        <Button beforeImg={contactImages.gmail} padding={'4px 16px'}>{userInfo.email}</Button>
+                        <Button beforeImg='edit' padding={'4px 16px'}>Вік: {userAge}</Button>
+                        {
+                            userInfo.phone ? <Button beforeImg={contactImages.phone} padding={'4px 16px'}>{userInfo.phone}</Button> : ''
+                        }
                     </div>
                 </div>
             </div>
             <div className={classes.userContact}>
-                <p>Про себе:</p>
-                <div className={classes.contactBox}>
-                    <img src={contactImages.telegram} alt='telegram'></img>
-                    <div>@JStudent222</div>
-                </div>
-                <div className={classes.contactBox}>
-                    <img src={contactImages.linkedIn} alt='linkedIn'></img>
-                    <div>@JStudt</div>
-                </div>
-                <div className={classes.contactBox}>
-                <img src={contactImages.github} alt='github'></img>
-                    <div>@JStkfkkfddddвudent</div>
-                </div>
+                { hasContactInfo && <p>Про себе:</p> }
+                {
+                    Object.entries(userContacts).map(([contactType, contactValue], index) => (
+                        contactValue && <div key={index} className={classes.contactBox}>
+                            <img src={contactImages[contactType.toLowerCase()]} alt={contactType}></img>
+                            <div>{contactValue}</div>
+                        </div>
+                    ))
+                }
             </div>
             <div className={classes.groupsBox}>
-                <h4>Группи:</h4>
-                {dummy_groups.map((group, index) => 
-                    <GroupCard key={index} title={group.name} description={group.description} status={group.type} usersCount={group.userCount} maxCount={group.maxCount} statusName={group.role}></GroupCard>
-                )}
+                <h4>Группи: {!userGroups.length && 'відсутні'}</h4>
+                {
+                    userGroups.map((group, index) => 
+                        <GroupCard
+                            key={index}
+                            title={group.group.name}
+                            description={group.group.description}
+                            status={group.type}
+                            usersCount={group.group.userCount}
+                            maxCount='999'
+                            statusName={group.role}
+                        ></GroupCard>
+                    )
+                }
             </div>
             <div className={classes.buttonBox}>
-                <Button >Вийти</Button>
+                <Button>Вийти</Button>
                 <Button typeColor='green'>Пітвердити</Button>
             </div>
         </div>
