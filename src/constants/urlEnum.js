@@ -1,4 +1,4 @@
-const api = 'http://localhost:5000/api';
+const api = process.env.REACT_APP_API_URL;
 const urlEnum = {
     api,
     register: `${api}/users/create`,

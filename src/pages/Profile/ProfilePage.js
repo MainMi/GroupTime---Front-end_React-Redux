@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchAuth } from '../../store/actions/auth-actions';
+import { fetchAuth } from '../../redux/actions/auth-actions';
 
 import Button from '../../UI/Button/Button';
 import GroupCard from '../../UI/GroupCard/GroupCard';
@@ -88,7 +88,7 @@ const ProfilePage = () => {
                             description={group.group.description}
                             status={group.type}
                             usersCount={group.group.userCount}
-                            maxCount='999'
+                            maxCount={group.group.parameters.usersLimit}
                             statusName={group.role}
                         ></GroupCard>
                     )

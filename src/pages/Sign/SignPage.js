@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { fetchRegister, fetchLogin } from '../../store/actions/auth-actions';
+import { fetchRegister, fetchLogin } from '../../redux/actions/auth-actions';
 
 const SignPage = () => {
     const dispatch = useDispatch();
@@ -135,4 +135,5 @@ const SignPage = () => {
         </div>
     </div>
 }
+
 export default SignPage;
