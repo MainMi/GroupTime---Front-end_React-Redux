@@ -10,11 +10,10 @@ const AboutPage = () => {
         return isActive ? classes.active : undefined;
     }
 
-    const isLogin = false
     return <header className={classes.header}>
         <nav className={classes.navigate}>
             <NavLink className={navLinkHeader} to='/'><img src={homeIcon} alt="Home" /></NavLink>
-            <NavLink className={navLinkHeader} to={isLogin ? '/profile' : '/sing'}><img src={userIcon} alt="User" /></NavLink>
+            <NavLink className={navLinkHeader} to={'/profile'}><img src={userIcon} alt="User" /></NavLink>
             <NavLink className={navLinkHeader} to='/groups'><img src={groupsIcon} alt="Groups" /></NavLink>
             <NavLink className={navLinkHeader} to='/schedule'><img src={scheduleIcon} alt="Schedule" /></NavLink>
         </nav>
