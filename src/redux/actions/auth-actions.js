@@ -19,6 +19,12 @@ const getFetch = (parameters, navigate, helpFn) => {
             }
             const data = await response.json();
             if (data.status >= 400 && data.status < 600) {
+                if (data.status === 401 && data.errorStatus === 4011) {
+                    console.log('Please confirm email!');
+                    navigate('/sign');
+                    return;
+                }
+
                 throw new Error(data.message);
             }
             if (helpFn) {
@@ -26,7 +32,7 @@ const getFetch = (parameters, navigate, helpFn) => {
             }
         } catch (e) {
             console.log(e);
-            return e;
+            throw e;
         }
     }
 }
@@ -96,6 +102,7 @@ export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
                     await dispatch(getFetch(newParameters, navigate, responseFn));
                 } else {
                     if (data.status >= 400 && data.status < 600) {
+                        dispatch(authAction.logOutAuth());
                         navigate('/sign');
                         return;
                     }
@@ -104,57 +111,60 @@ export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
             }));
         } catch (e) {
             console.log(e);
+            dispatch(authAction.logOutAuth());
             navigate('/sign');
         }
-};
+    };
 
 export const fetchRegister = (body, navigate) => {
+    const parameters = {
+        url: urlEnum.register,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: body,
+    };
+
+    const helpFn = (data, navigate, dispatch) => {
+        console.log('Please confirm email!');
+        navigate('/sign');
+    }
+
     return async (dispatch) => {
-        const parameters = {
-            url: urlEnum.register,
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: body,
-        };
-
-        return getFetch(parameters, navigate, async (data) => {
-            const { user, access_token, refresh_token } = data;
-            dispatch(authAction.updateAuth({
-                userInfo: { ...user, password: undefined },
-                userToken: access_token
-            }));
-
-            cookies.set('Access', access_token);
-            cookies.set('Refresh', refresh_token);
-
-            navigate('/profile');
-        })(dispatch);
+        try {
+            await getFetch(parameters, navigate, helpFn)(dispatch);
+        } catch (e) {
+            console.log(e.message);
+        }
     }
 }
 
 export const fetchLogin = (body, navigate) => {
+    const parameters = {
+        url: urlEnum.login,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: body,
+    };
+
+    const helpFn = async (data, navigate, dispatch) => {
+        const { user, access_token, refresh_token } = data;
+        dispatch(authAction.updateAuth({
+            userInfo: { ...user, password: undefined },
+            userToken: access_token
+        }));
+
+        cookies.set('Access', access_token);
+        cookies.set('Refresh', refresh_token);
+
+        navigate('/profile');
+    }
+
     return async (dispatch) => {
-        const parameters = {
-            url: urlEnum.login,
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: body,
-        };
-
-        console.log(urlEnum.login);
-
-        return getFetch(parameters, navigate, async (data) => {
-            const { user, access_token, refresh_token } = data;
-            dispatch(authAction.updateAuth({
-                userInfo: { ...user, password: undefined },
-                userToken: access_token
-            }));
-
-            cookies.set('Access', access_token);
-            cookies.set('Refresh', refresh_token);
-
-            navigate('/profile');
-        })(dispatch);
+        try {
+            await getFetch(parameters, navigate, helpFn)(dispatch);
+        } catch (e) {
+            console.log(e.message);
+        }
     }
 }
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchAuth } from '../../redux/actions/auth-actions';
+import { authAction } from '../../redux/slices/auth-slice';
 
 import Button from '../../UI/Button/Button';
 import GroupCard from '../../UI/GroupCard/GroupCard';
@@ -46,6 +47,11 @@ const ProfilePage = () => {
     }
 
     const userAge = getAge(userInfo.birthday);
+
+    const handleLogout = () => {
+        dispatch(authAction.logOutAuth());
+        navigate('/sign?mode=signIn');
+    };
 
     return <div>
         <HeaderImg position={'absolute'}/>
@@ -95,7 +101,7 @@ const ProfilePage = () => {
                 }
             </div>
             <div className={classes.buttonBox}>
-                <Button>Вийти</Button>
+                <Button onClick={handleLogout}>Вийти</Button>
                 <Button typeColor='green'>Пітвердити</Button>
             </div>
         </div>

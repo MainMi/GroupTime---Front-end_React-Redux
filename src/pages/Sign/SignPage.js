@@ -7,6 +7,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import ModalPassword from '../../components/Sign/ModalPassword/ModalPassword';
 import HeaderImg from '../../UI/HeaderImg/HeaderImg';
 import { useState } from 'react';
+import useInput from '../../hooks/useInput';
 
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -30,26 +31,47 @@ const SignPage = () => {
         setIsModalPassword((prevState) => !prevState);
     }
 
+    const firstNameInput = useInput('');
+    const lastNameInput = useInput('');
+    const nicknameInput = useInput('');
+    const birthdayInput = useInput('');
+    const emailInput = useInput('');
+    const passwordInput = useInput('');
+
     const registerHandler = async (ev) => {
         ev.preventDefault();
-        const registrationData = {
-            firstName: ev.target.elements.firstName.value,
-            lastName: ev.target.elements.lastName.value,
-            nickname: ev.target.elements.nickname.value,
-            birthday: ev.target.elements.birthday.value,
-            email: ev.target.elements.email.value,
-            password: ev.target.elements.password.value
-        };
-        dispatch(fetchRegister(registrationData, navigate));
+        if (
+            firstNameInput.isValidInput &&
+            lastNameInput.isValidInput &&
+            nicknameInput.isValidInput &&
+            birthdayInput.isValidInput &&
+            emailInput.isValidInput &&
+            valuePassword
+        ) {
+            const registrationData = {
+                firstName: firstNameInput.value,
+                lastName: lastNameInput.value,
+                nickname: nicknameInput.value,
+                birthday: birthdayInput.value,
+                email: emailInput.value,
+                password: valuePassword,
+            };
+
+            dispatch(fetchRegister(registrationData, navigate));
+        }
     };
 
     const loginHandler = async (ev) => {
         ev.preventDefault();
-        const loginData = {
-            email: ev.target.elements.email.value,
-            password: ev.target.elements.password.value
-        };
-        dispatch(fetchLogin(loginData, navigate));
+
+        if (emailInput.isValidInput && passwordInput.isValidInput) {
+            const loginData = {
+                email: emailInput.value,
+                password: passwordInput.value,
+            };
+
+            dispatch(fetchLogin(loginData, navigate));
+        }
     };
 
     return <div className={classes.content}>
@@ -66,27 +88,37 @@ const SignPage = () => {
                     <Input
                         label="Ім'я"
                         placeholder="Введіть Ім'я"
-                        name="firstName"
+                        value={firstNameInput.value}
+                        onChange={firstNameInput.inputChangeHandler}
+                        onBlur={firstNameInput.inputBlurHandler}
                     />
                     <Input
                         label="Прізвище"
                         placeholder="Введіть Прізвище"
-                        name="lastName"
+                        value={lastNameInput.value}
+                        onChange={lastNameInput.inputChangeHandler}
+                        onBlur={lastNameInput.inputBlurHandler}
                     />
                     <Input
                         label="Нікнейм"
                         placeholder="Введіть Нікнейм"
-                        name="nickname"
+                        value={nicknameInput.value}
+                        onChange={nicknameInput.inputChangeHandler}
+                        onBlur={nicknameInput.inputBlurHandler}
                     />
                     <Input
                         label="День народження"
                         placeholder="Введіть День народження"
-                        name="birthday"
+                        value={birthdayInput.value}
+                        onChange={birthdayInput.inputChangeHandler}
+                        onBlur={birthdayInput.inputBlurHandler}
                     />
                     <Input
                         label="Пошта"
                         placeholder="Введіть Пошта"
-                        name="email"
+                        value={emailInput.value}
+                        onChange={emailInput.inputChangeHandler}
+                        onBlur={emailInput.inputBlurHandler}
                     />
                     <Input
                         type="password"
@@ -95,7 +127,8 @@ const SignPage = () => {
                         readOnly={true}
                         label="Пароль"
                         placeholder="Введіть Пароль"
-                        name="password"
+                        onChange={passwordInput.inputChangeHandler}
+                        onBlur={passwordInput.inputBlurHandler}
                     />
                 </div>
                 <Button height={'fit-content'}>Зареєструватися</Button>
@@ -114,12 +147,17 @@ const SignPage = () => {
                     <Input
                         label="Пошта"
                         placeholder="Введіть Пошта"
-                        name="email"
+                        value={emailInput.value}
+                        onChange={emailInput.inputChangeHandler}
+                        onBlur={emailInput.inputBlurHandler}
                     />
                     <Input
+                        type="password"
                         label="Пароль"
                         placeholder="Введіть Пароль"
-                        name="password"
+                        value={passwordInput.value}
+                        onChange={passwordInput.inputChangeHandler}
+                        onBlur={passwordInput.inputBlurHandler}
                     />
                     <a className={classes.forgetPassword}>Забули пароль?</a>
                 </div>
