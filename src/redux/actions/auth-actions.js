@@ -14,6 +14,7 @@ const getFetch = (parameters, navigate, helpFn) => {
                 headers,
                 body
             });
+            console.log(response);
             if (!response) {
                 throw new Error('Could not fetch data');
             }
@@ -69,6 +70,7 @@ export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
         const authToken = cookies.get('Access');
         const url = urlEnum.userInfo;
         if (!authToken || !authToken.length) {
+            console.log('bad token');
             navigate('/sign');
             return;
         }
@@ -76,14 +78,12 @@ export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
         dispatch(authAction.updateAuth({ userToken: authToken }));
 
         try {
-            let { method = 'POST', body = null } = responseArgm;
+            const { method = 'POST'} = responseArgm;
             const headers = {
                 'Content-Type': 'application/json',
                 'Authorization': authToken
             };
-            if (body) {
-                body = JSON.stringify(body)
-            }
+            const body = responseArgm.body ? JSON.stringify(responseArgm.body) : null;
 
             const parameters = { url, method, headers, body };
             await dispatch(getFetch(parameters, navigate, async (data) => {
@@ -145,6 +145,7 @@ export const fetchLogin = (body, navigate) => {
         headers: { 'Content-Type': 'application/json' },
         body: body,
     };
+    console.log(parameters);
 
     const helpFn = async (data, navigate, dispatch) => {
         const { user, access_token, refresh_token } = data;
@@ -168,12 +169,12 @@ export const fetchLogin = (body, navigate) => {
     }
 }
 
-export const fetchUserInfo = () => {
+export const fetchUserInfo = (navigate) => {
     const responseFn = (data, dispatch) => {
         dispatch(authAction.updateAuth({
             userInfo: { ...data, password: undefined }
         }))
     }
 
-    return fetchAuth(responseFn, { url: urlEnum.userInfo }, false);
+    return fetchAuth(responseFn, navigate, { url: urlEnum.userInfo });
 }

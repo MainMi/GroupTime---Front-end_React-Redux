@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchAuth } from '../../redux/actions/auth-actions';
+import { fetchUserInfo } from '../../redux/actions/auth-actions';
 import { authAction } from '../../redux/slices/auth-slice';
 
 import Button from '../../UI/Button/Button';
 import GroupCard from '../../UI/GroupCard/GroupCard';
 import HeaderImg from '../../UI/HeaderImg/HeaderImg';
-import buttonsImages from '../../static/image/buttonIcons';
 import contactImages from '../../static/image/contactsIcons';
 import classes from './ProfilePage.module.scss'
 
@@ -15,24 +14,12 @@ const ProfilePage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [userInfo, setUserInfo] = useState(null);
+    let userInfo = useSelector((state) => state.auth.userInfo);
 
-    useEffect(() => {
-        dispatch(
-            fetchAuth(
-                (data) => {
-                    console.log('Authorized:', data);
-                    setUserInfo(data);
-                },
-                navigate
-            )
-        );
-    }, [dispatch, navigate]);
-
-    if (!userInfo) {
-        return null;
+    if (!userInfo || !userInfo?.fullName) {
+        dispatch(fetchUserInfo(navigate));
+        return <div>Loading...</div> // TODO Create Loading Component
     }
-
     const userGroups = userInfo.groups;
     const userContacts = userInfo.contacts;
 
