@@ -1,10 +1,12 @@
 import classes from './GroupCard.module.scss'
 import ButtonSmall from "../Button/ButtonSmall";
 import buttonsImages from '../../static/image/buttonIcons';
+import AvatarImg from '../AvatarImg/AvatarImg';
 
 const GroupCard = (props) => {
 
     const {
+        avatar = null,
         title,
         description,
         status,
@@ -19,7 +21,7 @@ const GroupCard = (props) => {
         <div className={classes.groupInfo}>
             <div className={classes.infoBox}>
                 <div className={classes.imgBox}>
-                    <img></img>
+                    <AvatarImg size={'small'} src={avatar}/>
                 </div>
                 <div className={classes.info}>
                     <h3>{title}</h3>

@@ -1,17 +1,10 @@
-import GroupCard from '../../UI/GroupCard/GroupCard';
-import HeaderImg from '../../UI/HeaderImg/HeaderImg';
-import classes from './GroupsPage.module.scss';
+import GroupCard from '../../../UI/GroupCard/GroupCard';
+import HeaderImg from '../../../UI/HeaderImg/HeaderImg';
+import classes from './GroupsSearch.module.scss';
 
-import searchIcon from '../../static/image/inputIcons/searchIcon.svg'
-import Button from '../../UI/Button/Button';
-
-const NotFoundGroups = () => {
-    return (
-        <div className={classes.notFound}>
-            <p>За данним пошуком груп не знайдено. <a>Створити группу?</a></p>
-        </div>
-    )
-}
+import searchIcon from '../../../static/image/inputIcons/searchIcon.svg'
+import Button from '../../../UI/Button/Button';
+import NotFoundGroups from '../../../components/Group/NotFoundGroups/NotFoundGroups';
 
 const GroupsCards = ({ groups }) => {
     return <div className={classes.groupsBox}>
@@ -28,7 +21,7 @@ const GroupsCards = ({ groups }) => {
     </div>
 }
 
-const GroupPage = () => {
+const GroupSearch = () => {
     const dummy_groups = [
         {
             name: 'IP-22',
@@ -57,7 +50,7 @@ const GroupPage = () => {
         <div className={classes.content}>
             <HeaderImg/>
             <div className={classes.container}>
-                <h1>Мої группи</h1>
+                <h1>Пошук группи</h1>
                 <div className={classes.searchBox}>
                     <img src={searchIcon} alt='search'></img>
                     <input type="text" className={classes.searchInput} name='search' placeholder="Введіть назву группи"/>
@@ -71,4 +64,4 @@ const GroupPage = () => {
     );
 };
 
-export default GroupPage;
+export default GroupSearch;

@@ -6,7 +6,10 @@ import chevronGreen from './chevronIcon-green.svg'
 import chevronPink from './chevronIcon-pink.svg'
 import edit from './editIcon.svg'
 import lockClose from './lockCloseIcon.svg'
+import lockClosePink from './lockCloseIcon-pink.svg'
 import lockOpen from './lockOpenIcon.svg'
+import lockOpenPink from './lockOpenIcon-pink.svg'
+import peopleGreen from './peopleIcon-green.svg'
 import plus from './plusIcon.svg'
 import trash from './trashIcon.svg'
 
@@ -21,7 +24,10 @@ const buttonsImages = {
     'chevron-pink': chevronPink,
     edit,
     lockClose,
+    'LockClose-pink': lockClosePink,
     lockOpen,
+    'lockOpen-pink': lockOpenPink,
+    'people-green': peopleGreen,
     plus,
     trash
 }

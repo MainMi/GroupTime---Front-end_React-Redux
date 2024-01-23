@@ -10,6 +10,22 @@ import HeaderImg from '../../UI/HeaderImg/HeaderImg';
 import buttonsImages from '../../static/image/buttonIcons';
 import contactImages from '../../static/image/contactsIcons';
 import classes from './ProfilePage.module.scss'
+import NotFoundGroups from '../../components/Group/NotFoundGroups/NotFoundGroups';
+import AvatarImg from '../../UI/AvatarImg/AvatarImg';
+
+const GroupsCards = ({ userGroups }) => {
+    return userGroups.map((group, index) => 
+            <GroupCard
+                key={index}
+                title={group.group.name}
+                description={group.group.description}
+                status={group.type}
+                usersCount={group.group.userCount}
+                maxCount={group.group.parameters.usersLimit}
+                statusName={group.role}
+            ></GroupCard>
+    )
+}
 
 const ProfilePage = () => {
     const dispatch = useDispatch();
@@ -58,9 +74,7 @@ const ProfilePage = () => {
         <div className={classes.content}>
             <div className={classes.userBox}>
                 <img></img>
-                <div className={classes.defaultImgBox}>
-                    <img></img>
-                </div>
+                <AvatarImg size={'large'}></AvatarImg>
                 <div className={classes.userInfo}>
                     <h1>{userInfo.fullName}</h1>
                     <div className={classes.userNickname}>{userInfo.nickname}</div>
@@ -85,24 +99,12 @@ const ProfilePage = () => {
                 }
             </div>
             <div className={classes.groupsBox}>
-                <h4>Группи: {!userGroups.length && 'відсутні'}</h4>
-                {
-                    userGroups.map((group, index) => 
-                        <GroupCard
-                            key={index}
-                            title={group.group.name}
-                            description={group.group.description}
-                            status={group.type}
-                            usersCount={group.group.userCount}
-                            maxCount={group.group.parameters.usersLimit}
-                            statusName={group.role}
-                        ></GroupCard>
-                    )
-                }
+                <h4>Группи:</h4>
+                { userGroups.length ? <GroupsCards userGroups={userGroups}></GroupsCards> : <NotFoundGroups className={classes.notFoundGroups}/> }
             </div>
             <div className={classes.buttonBox}>
-                <Button onClick={handleLogout}>Вийти</Button>
-                <Button typeColor='green'>Пітвердити</Button>
+                <Button onClick={handleLogout}>Редагувати</Button>
+                <Button typeColor='green'>Вихід з акаунту</Button>
             </div>
         </div>
     </div>
