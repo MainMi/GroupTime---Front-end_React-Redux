@@ -2,6 +2,8 @@ import { authAction } from '../slices/auth-slice';
 import urlEnum from '../../constants/urlEnum';
 import Cookies from 'universal-cookie';
 
+import { decryptAES, encryptAES } from '../../helper/crypto';
+
 const cookies = new Cookies();
 
 const getFetch = (parameters, navigate, helpFn) => {
@@ -67,12 +69,27 @@ async function refreshAuthToken(headers) {
 
 export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
     async (dispatch) => {
+        console.log('auth');
         const authToken = cookies.get('Access');
         const url = urlEnum.userInfo;
         if (!authToken || !authToken.length) {
             console.log('bad token');
             navigate('/sign');
             return;
+        }
+
+        const encryptedUserInfo = sessionStorage.getItem('userInfo');
+        if (encryptedUserInfo) {
+            try {
+                const decryptedData = decryptAES(encryptedUserInfo, process.env.REACT_APP_SECRET_KEY);
+                responseFn(decryptedData, dispatch);
+                navigate('/profile');
+                return;
+            } catch (e) {
+                console.log('User info data corrupted!');
+                navigate('/sign');
+                return;
+            }
         }
 
         dispatch(authAction.updateAuth({ userToken: authToken }));
@@ -106,6 +123,9 @@ export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
                         navigate('/sign');
                         return;
                     }
+
+                    const encryptedData = encryptAES(data, process.env.REACT_APP_SECRET_KEY);
+                    sessionStorage.setItem('userInfo', encryptedData);
                     responseFn(data, dispatch);
                 }
             }));
@@ -156,6 +176,9 @@ export const fetchLogin = (body, navigate) => {
 
         cookies.set('Access', access_token);
         cookies.set('Refresh', refresh_token);
+
+        const encryptedData = encryptAES(user, process.env.REACT_APP_SECRET_KEY);
+        sessionStorage.setItem('userInfo', encryptedData);
 
         navigate('/profile');
     }

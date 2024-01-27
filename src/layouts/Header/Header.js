@@ -7,8 +7,8 @@ import { NavLink } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 const AboutPage = () => {
-    const userToken = useSelector((state) => state.auth.userToken);
-    const isLogin = userToken?.access_token && userToken?.refresh_token;
+    const userInfo = useSelector((state) => state.auth.userInfo);
+    const isLogin = userInfo?.id;
     const navLinkHeader = ({ isActive }) => {
         return isActive ? classes.active : undefined;
     }

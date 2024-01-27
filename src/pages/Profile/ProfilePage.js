@@ -16,10 +16,16 @@ const ProfilePage = () => {
 
     let userInfo = useSelector((state) => state.auth.userInfo);
 
+    useEffect(() => {
+        if (!userInfo || !userInfo.fullName) {
+            dispatch(fetchUserInfo(navigate));
+        }
+    }, []);
+
     if (!userInfo || !userInfo?.fullName) {
-        dispatch(fetchUserInfo(navigate));
-        return <div>Loading...</div> // TODO Create Loading Component
+        return <div>Loading...</div>
     }
+
     const userGroups = userInfo.groups;
     const userContacts = userInfo.contacts;
 
