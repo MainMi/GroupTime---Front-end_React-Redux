@@ -1,36 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchAuth } from '../../redux/actions/auth-actions';
+import { fetchUserInfo } from '../../redux/actions/auth-actions';
 import { authAction } from '../../redux/slices/auth-slice';
 
 import Button from '../../UI/Button/Button';
 import GroupCard from '../../UI/GroupCard/GroupCard';
 import HeaderImg from '../../UI/HeaderImg/HeaderImg';
-import buttonsImages from '../../static/image/buttonIcons';
 import contactImages from '../../static/image/contactsIcons';
 import classes from './ProfilePage.module.scss'
+import NotFoundGroups from '../../components/Group/NotFoundGroups/NotFoundGroups';
+import AvatarImg from '../../UI/AvatarImg/AvatarImg';
+
+const GroupsCards = ({ userGroups }) => {
+    return userGroups.map((group, index) => 
+            <GroupCard
+                id={group.group._id}
+                key={index}
+                title={group.group.name}
+                description={group.group.description}
+                status={group.type}
+                usersCount={group.group.userCount}
+                maxCount={group.group.parameters.usersLimit}
+                statusName={group.role}
+            ></GroupCard>
+    )
+}
 
 const ProfilePage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [userInfo, setUserInfo] = useState(null);
+    let userInfo = useSelector((state) => state.auth.userInfo);
 
     useEffect(() => {
-        dispatch(
-            fetchAuth(
-                (data) => {
-                    console.log('Authorized:', data);
-                    setUserInfo(data);
-                },
-                navigate
-            )
-        );
-    }, [dispatch, navigate]);
+        if (!userInfo || !userInfo.fullName) {
+            dispatch(fetchUserInfo(navigate));
+        }
+    }, []);
 
-    if (!userInfo) {
-        return null;
+    if (!userInfo || !userInfo?.fullName) {
+        return <div>Loading...</div>
     }
 
     const userGroups = userInfo.groups;
@@ -58,9 +68,7 @@ const ProfilePage = () => {
         <div className={classes.content}>
             <div className={classes.userBox}>
                 <img></img>
-                <div className={classes.defaultImgBox}>
-                    <img></img>
-                </div>
+                <AvatarImg size={'large'} src={userInfo.avatar}></AvatarImg>
                 <div className={classes.userInfo}>
                     <h1>{userInfo.fullName}</h1>
                     <div className={classes.userNickname}>{userInfo.nickname}</div>
@@ -85,24 +93,12 @@ const ProfilePage = () => {
                 }
             </div>
             <div className={classes.groupsBox}>
-                <h4>Группи: {!userGroups.length && 'відсутні'}</h4>
-                {
-                    userGroups.map((group, index) => 
-                        <GroupCard
-                            key={index}
-                            title={group.group.name}
-                            description={group.group.description}
-                            status={group.type}
-                            usersCount={group.group.userCount}
-                            maxCount={group.group.parameters.usersLimit}
-                            statusName={group.role}
-                        ></GroupCard>
-                    )
-                }
+                <h4>Группи:</h4>
+                { userGroups.length ? <GroupsCards userGroups={userGroups}></GroupsCards> : <NotFoundGroups className={classes.notFoundGroups}/> }
             </div>
             <div className={classes.buttonBox}>
-                <Button onClick={handleLogout}>Вийти</Button>
-                <Button typeColor='green'>Пітвердити</Button>
+                <Button onClick={handleLogout}>Редагувати</Button>
+                <Button typeColor='green'>Вихід з акаунту</Button>
             </div>
         </div>
     </div>

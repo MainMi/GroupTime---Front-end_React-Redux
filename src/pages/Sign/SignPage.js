@@ -6,21 +6,25 @@ import patternBig from '../../static/image/pattern/patternBig.svg';
 import { Link, useSearchParams } from 'react-router-dom';
 import ModalPassword from '../../components/Sign/ModalPassword/ModalPassword';
 import HeaderImg from '../../UI/HeaderImg/HeaderImg';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useInput from '../../hooks/useInput';
 
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { fetchRegister, fetchLogin } from '../../redux/actions/auth-actions';
+import { fetchRegister, fetchLogin, fetchUserInfo } from '../../redux/actions/auth-actions';
 
 const SignPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        dispatch(fetchUserInfo(navigate));
+    }, []);
+
     const [ searchParam ] = useSearchParams();
-    const isLogin = searchParam.get('mode') === 'signIn';
-    const signClass = `${classes.signBox} ${isLogin ? classes.signIn : ''}`;
+    const isSignUp = searchParam.get('mode') === 'signUp';
+    const signClass = `${classes.signBox} ${isSignUp ? '' : classes.signIn}`;
     const [ isModalPassword, setIsModalPassword ] = useState(false);
     const [ valuePassword, setPasswordValue ] = useState('');
 

@@ -10,6 +10,7 @@ const Button = (props) => {
         size = 16,
         beforeImg = false,
         afterImg = false,
+        className = '',
         onClick = () => {},
         ...otherStyles
     } = props;
@@ -19,11 +20,11 @@ const Button = (props) => {
     if (afterImg) {
         afterImg = afterImg in buttonsImage ? buttonsImage[afterImg] : afterImg
     }
-    const className = `${classes.button} ${typeColor === 'green' ? classes.green : ''} ${type === 'noBorder' ? classes.noBorder : ''} ${active ? classes.active : ''}`;
+    const newClassName = `${classes.button} ${typeColor === 'green' ? classes.green : ''} ${type === 'noBorder' ? classes.noBorder : ''} ${active ? classes.active : ''} ${props.className}`;
 
     const imgSizeStyle = { width: `${size}px`, height: `${size}px`};
 
-    return <button className={className} disabled={disabled} onClick={onClick} style={{ fontSize: `${size}px`, ...otherStyles}}>
+    return <button className={newClassName} disabled={disabled} onClick={onClick} style={{ fontSize: `${size}px`, ...otherStyles}}>
         {beforeImg && <img src={beforeImg} style={imgSizeStyle} alt='bImg'/>}
         <div>{props.children}</div>
         {afterImg && <img src={afterImg} style={imgSizeStyle} alt='aImg'/>}

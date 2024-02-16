@@ -75,6 +75,10 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+        .notFoundGroups {
+            height: 100%;
+            border-radius: 15px;
+        }
     }
     .buttonBox {
         display: flex;

@@ -2,9 +2,11 @@ import { authAction } from '../slices/auth-slice';
 import urlEnum from '../../constants/urlEnum';
 import Cookies from 'universal-cookie';
 
+import { decryptAES, encryptAES } from '../../helper/crypto';
+
 const cookies = new Cookies();
 
-const getFetch = (parameters, navigate, helpFn) => {
+export const getFetch = (parameters, navigate, helpFn) => {
     return async (dispatch) => {
         try {
             const { url, method = 'GET', headers = {} } = parameters;
@@ -25,13 +27,17 @@ const getFetch = (parameters, navigate, helpFn) => {
                     return;
                 }
 
-                throw new Error(data.message);
+                // eslint-disable-next-line no-throw-literal
+                throw {
+                    status: data.status,
+                    errorStatus: data.errorStatus,
+                    message: data.message
+                };
             }
             if (helpFn) {
                 helpFn(data, navigate, dispatch);
             }
         } catch (e) {
-            console.log(e);
             throw e;
         }
     }
@@ -64,26 +70,23 @@ async function refreshAuthToken(headers) {
     return refreshData;
 }
 
-export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
+export const reFetchAuth = (responseFn, navigate, responseArgm = {}) => 
     async (dispatch) => {
-        const authToken = cookies.get('Access');
-        const url = urlEnum.userInfo;
-        if (!authToken || !authToken.length) {
-            navigate('/sign');
-            return;
-        }
-
-        dispatch(authAction.updateAuth({ userToken: authToken }));
-
         try {
-            let { method = 'POST', body = null } = responseArgm;
+            const authToken = cookies.get('Access');
+            if (!authToken || !authToken.length) {
+                console.log('bad token');
+                navigate('/sign');
+                return;
+            }
+
+            const url = urlEnum.userInfo;
+            const { method = 'POST'} = responseArgm;
             const headers = {
                 'Content-Type': 'application/json',
                 'Authorization': authToken
             };
-            if (body) {
-                body = JSON.stringify(body)
-            }
+            const body = responseArgm.body ? JSON.stringify(responseArgm.body) : null;
 
             const parameters = { url, method, headers, body };
             await dispatch(getFetch(parameters, navigate, async (data) => {
@@ -106,14 +109,33 @@ export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
                         navigate('/sign');
                         return;
                     }
+
+                    const encryptedData = encryptAES(data, process.env.REACT_APP_SECRET_KEY);
+                    sessionStorage.setItem('userInfo', encryptedData);
                     responseFn(data, dispatch);
                 }
             }));
         } catch (e) {
-            console.log(e);
             dispatch(authAction.logOutAuth());
             navigate('/sign');
         }
+    };
+
+export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
+    async (dispatch) => {
+        const encryptedUserInfo = sessionStorage.getItem('userInfo');
+        if (encryptedUserInfo) {
+            try {
+                const decryptedData = decryptAES(encryptedUserInfo, process.env.REACT_APP_SECRET_KEY);
+                responseFn(decryptedData, dispatch);
+                navigate('/profile');
+                return;
+            } catch (e) {
+                console.log('User info data corrupted!');
+            }
+        }
+
+        await reFetchAuth(responseFn, navigate, responseArgm)(dispatch);
     };
 
 export const fetchRegister = (body, navigate) => {
@@ -145,6 +167,7 @@ export const fetchLogin = (body, navigate) => {
         headers: { 'Content-Type': 'application/json' },
         body: body,
     };
+    console.log(parameters);
 
     const helpFn = async (data, navigate, dispatch) => {
         const { user, access_token, refresh_token } = data;
@@ -155,6 +178,9 @@ export const fetchLogin = (body, navigate) => {
 
         cookies.set('Access', access_token);
         cookies.set('Refresh', refresh_token);
+
+        const encryptedData = encryptAES(user, process.env.REACT_APP_SECRET_KEY);
+        sessionStorage.setItem('userInfo', encryptedData);
 
         navigate('/profile');
     }
@@ -168,12 +194,12 @@ export const fetchLogin = (body, navigate) => {
     }
 }
 
-export const fetchUserInfo = () => {
+export const fetchUserInfo = (navigate) => {
     const responseFn = (data, dispatch) => {
         dispatch(authAction.updateAuth({
             userInfo: { ...data, password: undefined }
         }))
     }
 
-    return fetchAuth(responseFn, { url: urlEnum.userInfo }, false);
+    return fetchAuth(responseFn, navigate, { url: urlEnum.userInfo });
 }
