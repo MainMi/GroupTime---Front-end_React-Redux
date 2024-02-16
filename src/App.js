@@ -17,7 +17,7 @@ function App() {
                 { path: '/sign', element: <SignPage /> },
                 { path: '/profile', element: <ProfilePage /> },
                 { path: '/groups', element: <GroupSearch />, },
-                { path: '/groups/create', element: <GroupInfo /> }
+                { path: '/groups/info/:groupId', element: <GroupInfo /> }
             ]
         }
     ]);

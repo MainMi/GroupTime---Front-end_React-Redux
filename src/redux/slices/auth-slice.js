@@ -13,6 +13,10 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         updateAuth: (state, action) => ({ ...state, ...action.payload }),
+        removeUserInfo: () => {
+            sessionStorage.removeItem('userInfo');
+            return { userInfo: {}, userToken: cookies.get('Access') };
+        },
         logOutAuth: () => {
             cookies.remove('Access');
             cookies.remove('Refresh');

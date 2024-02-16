@@ -6,7 +6,7 @@ import { decryptAES, encryptAES } from '../../helper/crypto';
 
 const cookies = new Cookies();
 
-const getFetch = (parameters, navigate, helpFn) => {
+export const getFetch = (parameters, navigate, helpFn) => {
     return async (dispatch) => {
         try {
             const { url, method = 'GET', headers = {} } = parameters;
@@ -16,7 +16,6 @@ const getFetch = (parameters, navigate, helpFn) => {
                 headers,
                 body
             });
-            console.log(response);
             if (!response) {
                 throw new Error('Could not fetch data');
             }
@@ -28,13 +27,17 @@ const getFetch = (parameters, navigate, helpFn) => {
                     return;
                 }
 
-                throw new Error(data.message);
+                // eslint-disable-next-line no-throw-literal
+                throw {
+                    status: data.status,
+                    errorStatus: data.errorStatus,
+                    message: data.message
+                };
             }
             if (helpFn) {
                 helpFn(data, navigate, dispatch);
             }
         } catch (e) {
-            console.log(e);
             throw e;
         }
     }
@@ -67,34 +70,17 @@ async function refreshAuthToken(headers) {
     return refreshData;
 }
 
-export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
+export const reFetchAuth = (responseFn, navigate, responseArgm = {}) => 
     async (dispatch) => {
-        console.log('auth');
-        const authToken = cookies.get('Access');
-        const url = urlEnum.userInfo;
-        if (!authToken || !authToken.length) {
-            console.log('bad token');
-            navigate('/sign');
-            return;
-        }
-
-        const encryptedUserInfo = sessionStorage.getItem('userInfo');
-        if (encryptedUserInfo) {
-            try {
-                const decryptedData = decryptAES(encryptedUserInfo, process.env.REACT_APP_SECRET_KEY);
-                responseFn(decryptedData, dispatch);
-                navigate('/profile');
-                return;
-            } catch (e) {
-                console.log('User info data corrupted!');
+        try {
+            const authToken = cookies.get('Access');
+            if (!authToken || !authToken.length) {
+                console.log('bad token');
                 navigate('/sign');
                 return;
             }
-        }
 
-        dispatch(authAction.updateAuth({ userToken: authToken }));
-
-        try {
+            const url = urlEnum.userInfo;
             const { method = 'POST'} = responseArgm;
             const headers = {
                 'Content-Type': 'application/json',
@@ -130,10 +116,26 @@ export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
                 }
             }));
         } catch (e) {
-            console.log(e);
             dispatch(authAction.logOutAuth());
             navigate('/sign');
         }
+    };
+
+export const fetchAuth = (responseFn, navigate, responseArgm = {}) =>
+    async (dispatch) => {
+        const encryptedUserInfo = sessionStorage.getItem('userInfo');
+        if (encryptedUserInfo) {
+            try {
+                const decryptedData = decryptAES(encryptedUserInfo, process.env.REACT_APP_SECRET_KEY);
+                responseFn(decryptedData, dispatch);
+                navigate('/profile');
+                return;
+            } catch (e) {
+                console.log('User info data corrupted!');
+            }
+        }
+
+        await reFetchAuth(responseFn, navigate, responseArgm)(dispatch);
     };
 
 export const fetchRegister = (body, navigate) => {

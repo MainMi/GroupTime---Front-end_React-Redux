@@ -9,7 +9,7 @@ import HeaderImg from '../../UI/HeaderImg/HeaderImg';
 import React, { useState, useEffect } from 'react';
 import useInput from '../../hooks/useInput';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { fetchRegister, fetchLogin, fetchUserInfo } from '../../redux/actions/auth-actions';

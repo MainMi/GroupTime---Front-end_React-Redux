@@ -15,6 +15,7 @@ import AvatarImg from '../../UI/AvatarImg/AvatarImg';
 const GroupsCards = ({ userGroups }) => {
     return userGroups.map((group, index) => 
             <GroupCard
+                id={group.group._id}
                 key={index}
                 title={group.group.name}
                 description={group.group.description}
@@ -67,7 +68,7 @@ const ProfilePage = () => {
         <div className={classes.content}>
             <div className={classes.userBox}>
                 <img></img>
-                <AvatarImg size={'large'}></AvatarImg>
+                <AvatarImg size={'large'} src={userInfo.avatar}></AvatarImg>
                 <div className={classes.userInfo}>
                     <h1>{userInfo.fullName}</h1>
                     <div className={classes.userNickname}>{userInfo.nickname}</div>

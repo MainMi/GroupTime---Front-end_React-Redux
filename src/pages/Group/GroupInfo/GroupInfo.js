@@ -5,27 +5,49 @@ import UserCard from '../../../UI/UserCard/UserCard';
 import buttonsImages from '../../../static/image/buttonIcons';
 import classes from './GroupInfo.module.scss';
 
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
+import { fetchGroupInfo } from '../../../redux/actions/group-info-action';
+
 const GroupInfo = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const { groupId } = useParams();
+
+    let groupInfo = useSelector(state => state.groupInfo);
+
+    useEffect(() => {
+        if (!groupInfo || !groupInfo.name || groupInfo.id !== groupId) {
+            dispatch(fetchGroupInfo(groupId, navigate));
+        }
+    }, []);
+
+    if (!groupInfo || !groupInfo.name || groupInfo.id !== groupId) {
+        return <div>Loading...</div>
+    }
+
     return (
         <div className={classes.content}>
             <HeaderImg />
             <div className={classes.container}>
-                <Button typeColor='green' beforeImg='chevron' className={classes.btn}>Назад</Button>
+                <Button typeColor='green' beforeImg='chevron' className={classes.btn} onClick={() => navigate(-1)}>Назад</Button>
                 <div className={classes.groupInfoBox}>
-                    <AvatarImg size={'large'}></AvatarImg>
+                    <AvatarImg size={'large'} src={groupInfo.avatar}></AvatarImg>
                     <div className={classes.groupInfo}>
-                        <h1>ІП-24</h1>
+                        <h1>{groupInfo.name}</h1>
                         <div className={classes.buttonBox}>
                             <div className={classes.groupInfoBtn}>
-                                <img src={buttonsImages['LockClose-pink']}></img>
-                                private
+                                <img src={groupInfo.type === 'public' ? buttonsImages['lockOpen-pink'] : buttonsImages['lockClose-pink']}></img>
+                                {groupInfo.type}
                             </div>
                             <div className={`${classes.groupInfoBtn} ${classes.green}`}>
                                 <img src={buttonsImages['people-green']}></img>
-                                13/50
+                                {groupInfo.userCount}/{groupInfo.parameters.usersLimit}
                             </div>
                         </div>
-                        <p>Опис: Утопія ґрунтується на ідеї, що гроші корумпують владу і знищують справедливість і щастя в суспільстві. Гітлодей зазначає, що навіть найбагатші люди все одно нещасливі.</p>
+                        <p>{groupInfo.description}</p>
                         <div className={classes.buttonBox}>
                             <Button>Видалити групу</Button>
                             <Button typeColor='green'>Редагувати</Button>
@@ -33,9 +55,18 @@ const GroupInfo = () => {
                     </div>
                 </div>
                 <div className={classes.userBox}>
-                    <p>Учасники групи</p>
+                    <p>Учасники групи: {groupInfo.userCount}</p>
                     <div className={classes.usersBox}>
-                        <UserCard></UserCard>
+                        {
+                            groupInfo.users.map((userData) => (
+                                <UserCard
+                                    key={userData.id}
+                                    avatar={userData.user.avatar}
+                                    fullName={userData.user.fullName}
+                                    role={userData.role}
+                                ></UserCard>
+                            ))
+                        }
                     </div>
                 </div>
             </div>

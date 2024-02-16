@@ -3,9 +3,11 @@ import ButtonSmall from "../Button/ButtonSmall";
 import buttonsImages from '../../static/image/buttonIcons';
 import AvatarImg from '../AvatarImg/AvatarImg';
 
-const GroupCard = (props) => {
+import { useNavigate } from 'react-router-dom';
 
+const GroupCard = (props) => {
     const {
+        id,
         avatar = null,
         title,
         description,
@@ -13,10 +15,20 @@ const GroupCard = (props) => {
         statusName = status,
         usersCount,
         maxCount,
-        type = 'view'
+        type = 'view',
     } = props;
+
+    const navigate = useNavigate();
+
     const isView = type === 'view';
     const isPrivate = status === 'private';
+
+    const redirectToGroupInfo = () => {
+        if (id) {
+            navigate(`/groups/info/${encodeURIComponent(id)}`);
+        }
+    };
+
     return <div className={classes.content}>
         <div className={classes.groupInfo}>
             <div className={classes.infoBox}>
@@ -38,7 +50,12 @@ const GroupCard = (props) => {
         <div className={classes.groupNavigation}>
             <img></img>
             <p className={classes.userCount}>{usersCount}/{maxCount}</p>
-            <ButtonSmall typeColor={isView ? "green" : "darkGreen"} className={isView ? classes.goToButton : classes.addButton} centerImg={isView ? 'chevron': 'plus'}/>
+            <ButtonSmall
+                typeColor={isView ? "green" : "darkGreen"}
+                className={isView ? classes.goToButton : classes.addButton}
+                centerImg={isView ? 'chevron': 'plus'}
+                onClick={isView ? redirectToGroupInfo : null}
+            />
         </div>
     </div>
 }
